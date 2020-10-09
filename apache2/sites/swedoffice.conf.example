@@ -1,0 +1,40 @@
+<VirtualHost *:80>
+   ServerName swedoffice.test
+   Redirect / https://swedoffice.test
+</VirtualHost>
+<VirtualHost *:80>
+   ServerName mobile.swedoffice.test
+   Redirect / https://mobile.swedoffice.test
+</VirtualHost>
+
+<IfModule mod_ssl.c>
+    <VirtualHost _default_:443>
+        ServerAdmin webmaster@localhost
+        ServerName swedoffice.test
+        ServerAlias *.swedoffice.test
+        DocumentRoot /var/www/Swedoffice/public/
+
+        SetEnv APP_BASE_PATH "/var/www/Swedoffice/"
+
+        SSLEngine on
+        SSLCertificateFile "/etc/apache2/ssl/so_ssl_site.crt"
+        SSLCertificateKeyFile "/etc/apache2/ssl/so_ssl_site.key"
+
+        #SSLOptions +FakeBasicAuth +ExportCertData +StrictRequire
+        <FilesMatch "\.(cgi|shtml|phtml|php)$">
+                SSLOptions +StdEnvVars
+        </FilesMatch>
+
+    	<Directory />
+    		Options FollowSymLinks
+    		AllowOverride None
+    	</Directory>
+
+        <Directory /var/www/Swedoffice/public/>
+            Options FollowSymLinks MultiViews
+            AllowOverride All
+            Order allow,deny
+            allow from all
+        </Directory>
+    </VirtualHost>
+</IfModule>

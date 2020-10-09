@@ -19,6 +19,20 @@ WORKDIR /var/www/
 
 COPY vhost.conf /etc/apache2/sites-enabled/vhost.conf
 
+RUN mkdir /etc/apache2/ssl 2> /dev/null
+RUN openssl genrsa -out "/etc/apache2/ssl/so_ssl_site.key" 2048 \
+    && openssl req -new -key "/etc/apache2/ssl/so_ssl_site.key" -out "/etc/apache2/ssl/so_ssl_site.csr" -subj "/CN=swedoffice.test/O=LGS/C=IT" \
+    && openssl x509 -req -days 365 -in "/etc/apache2/ssl/so_ssl_site.csr" -signkey "/etc/apache2/ssl/so_ssl_site.key" -out "/etc/apache2/ssl/so_ssl_site.crt"
+
+RUN openssl genrsa -out "/etc/apache2/ssl/km_ssl_site.key" 2048 \
+    && openssl req -new -key "/etc/apache2/ssl/km_ssl_site.key" -out "/etc/apache2/ssl/km_ssl_site.csr" -subj "/CN=kontorsmaterial.test/O=LGS/C=IT" \
+    && openssl x509 -req -days 365 -in "/etc/apache2/ssl/km_ssl_site.csr" -signkey "/etc/apache2/ssl/km_ssl_site.key" -out "/etc/apache2/ssl/km_ssl_site.crt"
+
+
+RUN a2enmod rewrite && a2enmod headers && a2enmod proxy proxy_html proxy_http xml2enc
+RUN a2enmod ssl
+RUN service apache2 restart
+
 ENTRYPOINT ["/opt/docker/bin/entrypoint.sh"]
 
 CMD ["supervisord"]

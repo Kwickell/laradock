@@ -1,0 +1,40 @@
+<VirtualHost *:80>
+   ServerName kontorsmaterial.test
+   Redirect / https://kontorsmaterial.test
+</VirtualHost>
+<VirtualHost *:80>
+   ServerName mobile.kontorsmaterial.test
+   Redirect / https://mobile.kontorsmaterial.test
+</VirtualHost>
+
+<IfModule mod_ssl.c>
+    <VirtualHost _default_:443>
+        ServerAdmin webmaster@localhost
+        ServerName kontorsmaterial.test
+        ServerAlias *.kontorsmaterial.test
+        DocumentRoot /var/www/Kontorsmaterial/public/
+
+        SetEnv APP_BASE_PATH "/var/www/Kontorsmaterial/"
+
+        SSLEngine on
+        SSLCertificateFile "/etc/apache2/ssl/km_ssl_site.crt"
+        SSLCertificateKeyFile "/etc/apache2/ssl/km_ssl_site.key"
+
+        #SSLOptions +FakeBasicAuth +ExportCertData +StrictRequire
+        <FilesMatch "\.(cgi|shtml|phtml|php)$">
+                SSLOptions +StdEnvVars
+        </FilesMatch>
+
+    	<Directory />
+    		Options FollowSymLinks
+    		AllowOverride All
+    	</Directory>
+
+        <Directory /var/www/Kontorsmaterial/public/>
+            Options FollowSymLinks MultiViews
+            AllowOverride All
+            Order allow,deny
+            allow from all
+        </Directory>
+    </VirtualHost>
+</IfModule>
